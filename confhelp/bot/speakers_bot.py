@@ -1,21 +1,24 @@
 import telebot
-
+from environs import Env
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-bot = telebot.TeleBot(token)  # TODO подтянуть из env
+Env().read_env()
+token = Env().str('TG_SPEAKERS_BOT_TOKEN')
+bot = telebot.TeleBot(token)
 
+# Получение данных из БД
+questions = ['questions', 'questions1', 'questions2', 'questions3']  # TODO Нужен список вопросов из БД
+speakers = ['da_maslyaev', 'TemWithFrog', 'SammelsFavillion', 'vladpap']  # TODO Нужен список докладчиков из БД
+count = len(questions)
 page = 1
-quests = [['username', 'questions'], ['username1', 'questions1'], ['username2', 'questions2']]
-speakers = ['da_maslyaev']
-count = len(quests)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
     global page
-    global count  # TODO убрать глобалы
-    global quests  # TODO убрать глобалы
-    global speakers  # TODO добавить список докладчиков из БД
+    global count
+    global questions
+    global speakers
     # Обработка кнопки - скрыть
     if call.data == 'unseen':
         bot.delete_message(call.message.chat.id, call.message.message_id)
@@ -37,13 +40,13 @@ def callback_query(call):
         markup.add(InlineKeyboardButton(text=f'<--- Назад', callback_data=f'back-page'),
                    InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
                    InlineKeyboardButton(text=f'Вперёд --->', callback_data=f'next-page'))
-        bot.edit_message_text(f'Вопрос от {quests[page - 1][0]}\n{quests[page - 1][1]}', reply_markup=markup,
+        bot.edit_message_text(questions[page - 1], reply_markup=markup,
                               chat_id=call.message.chat.id,
                               message_id=call.message.message_id)
 
     # Обработка кнопки - вперед
     elif call.data == 'next-page':
-        if page <= count:
+        if page < count:
             page = page + 1
             markup = InlineKeyboardMarkup()
             markup.add(InlineKeyboardButton(text='Закончить доклад',
@@ -51,7 +54,7 @@ def callback_query(call):
             markup.add(InlineKeyboardButton(text=f'<--- Назад', callback_data=f'back-page'),
                        InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
                        InlineKeyboardButton(text=f'Вперёд --->', callback_data=f'next-page'))
-            bot.edit_message_text(f'Вопрос от {quests[page - 1][0]}\n{quests[page - 1][1]}', reply_markup=markup,
+            bot.edit_message_text(questions[page - 1], reply_markup=markup,
                                   chat_id=call.message.chat.id,
                                   message_id=call.message.message_id)
     # Обработка кнопки - назад
@@ -64,18 +67,18 @@ def callback_query(call):
             markup.add(InlineKeyboardButton(text=f'<--- Назад', callback_data=f'back-page'),
                        InlineKeyboardButton(text=f'{page}/{count}', callback_data=f' '),
                        InlineKeyboardButton(text=f'Вперёд --->', callback_data=f'next-page'))
-            bot.edit_message_text(f'Вопрос от {quests[page - 1][0]}\n{quests[page - 1][1]}', reply_markup=markup,
+            bot.edit_message_text(questions[page - 1], reply_markup=markup,
                                   chat_id=call.message.chat.id,
                                   message_id=call.message.message_id)
     # Обработка кнопки - Закончить доклад
     if call.data == 'finish':  # TODO Добавить отметку в БД Закончить доклад
         markup = InlineKeyboardMarkup()
         markup.add(
-            InlineKeyboardButton(text='Хочу', url='https://t.me/users_group'))  # TODO Добавить группу пользователей
+            InlineKeyboardButton(text='Хочу', url='https://t.me/MeetUsers_bot'))
         bot.send_message(call.message.chat.id, 'Хочешь послушать других докладчиков?', reply_markup=markup)
 
 
-# Обработчик входящих сообщений
+# Обработчик начала использования бота
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = InlineKeyboardMarkup()
