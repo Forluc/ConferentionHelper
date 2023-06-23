@@ -59,16 +59,6 @@ speakers = {  # TODO наполнить данными из БД
 # Обработчик кнопок
 @bot.callback_query_handler(func=lambda call: True)
 def callback_query(call):
-    def ggg():
-        markup = InlineKeyboardMarkup()
-        markup.add(InlineKeyboardButton(text='Спикеры и программа', callback_data='speakers-and-programs'))
-        markup.add(InlineKeyboardButton(text='Сейчас выступает', callback_data='now-speaker'))
-        markup.add(InlineKeyboardButton(text='На главную', callback_data='main'))
-        bot.send_photo(call.message.chat.id,
-                       r'https://blog.europython.eu/content/images/size/w1000/2023/04/default.png',
-                       reply_markup=markup,
-                       caption='Спикеры заранее записываются, чтобы выступить, готовят презентации на тему Python и разработки в целом, приглашается много гостей, спикеры рассказывают презентации, гости задают вопросы, в конце – все кушают бесплатную пиццу и обмениваются визитками.')
-
     # Обработка кнопки - меню
     if call.data == 'main':
         markup = InlineKeyboardMarkup()
