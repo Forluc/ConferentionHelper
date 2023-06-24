@@ -91,4 +91,3 @@ class QustionAdmin(admin.ModelAdmin):
 
     get_user_count.short_description = 'Кол-во вопросов'
     get_user_count.admin_order_field = '_user_count'
-    get_title.admin_order_field = 'title'
