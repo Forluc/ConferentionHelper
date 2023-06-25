@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import MeetUpUser, Speach, Qustion
+from .models import MeetUpUser, Speach, Question
 from django.utils.html import format_html
 from django.db.models import Count
 
@@ -42,14 +42,17 @@ class SpeachAdmin(admin.ModelAdmin):
     def get_speaker(self, obj):
         return f'{obj.speaker.user.first_name} {obj.speaker.user.last_name}'
 
+    get_speaker.short_description = 'Докладчик'
+    # start_at.admin_order_field = 'start_at'
+
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "speaker":
             kwargs["queryset"] = MeetUpUser.objects.filter(is_speaker=True)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-@admin.register(Qustion)
-class QustionAdmin(admin.ModelAdmin):
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
     list_display = [
         'get_title',
         'get_speach',
