@@ -12,7 +12,11 @@ class EventCalendar(models.Model):
 class EventDate(models.Model):
     event_time_start = models.ForeignKey(EventCalendar, on_delete=models.CASCADE)
     event_time_stop = models.ForeignKey(EventCalendar, on_delete=models.CASCADE)
-    
+
+class Reporter(models.Model):
+    name = models.CharField(max_length=200)
+    telegram = models.CharField(max_length=200)
+    event_theme = models.TextField()
 
 
 
